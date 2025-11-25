@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fake Content Detector | Verify Authenticity</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        main {
+            padding: 3rem 0;
+            flex: 1;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 0.75rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            background-color: #f9fafb;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: #f0f4ff;
+        }
+        
+        .upload-area.active {
+            border-color: var(--primary);
+            background-color: #e6eeff;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-area.active .upload-icon {
+            color: var(--primary);
+        }
+        
+        .upload-text {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .file-types {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .text-input-area {
+            margin-top: 2rem;
+            border-top: 1px solid #e9ecef;
+            padding-top: 2rem;
+        }
+        
+        .text-input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .text-input-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .text-toggle {
+            display: flex;
+            align-items: center;
+            background: #f1f3f9;
+            border-radius: 30px;
+            padding: 4px;
+        }
+        
+        .toggle-option {
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toggle-option.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .text-area-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .text-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: var(--border-radius);
+            resize: vertical;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .char-count {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #6511a0;
+        }
+        
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn:disabled {
+            background-color: #b0b7d1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn:disabled:hover {
+            transform: none;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            background-color: #f0f4ff;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        .file-details {
+            flex-grow: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .file-size {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .remove-file {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .detection-results {
+            display: none;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .confidence-meter {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+        
+        .confidence-text {
+            text-align: center;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .result-details {
+            margin-top: 1.5rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+        }
+        
+        .authentic {
+            color: #28a745;
+        }
+        
+        .suspicious {
+            color: #ffc107;
+        }
+        
+        .fake {
+            color: var(--danger);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .text-toggle {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-shield-alt logo-icon"></i>
+                <h1>AI Fake Content Detector</h1>
+            </div>
+            <p class="subtitle">Advanced detection technology to verify the authenticity of digital content and identify AI-generated materials</p>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-cloud-upload-alt"></i> Upload Content for Analysis</h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-file-upload upload-icon"></i>
+                    <p class="upload-text">Drag & drop your file here or click to browse</p>
+                    <p class="file-types">Supported formats: Images (JPG, PNG), Documents (PDF, DOCX), Presentations (PPTX)</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".jpg,.jpeg,.png,.pdf,.docx,.pptx">
+                    <button class="btn btn-secondary" id="browseBtn">Browse Files</button>
+                </div>
+                
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <i class="fas fa-file file-icon"></i>
+                    <div class="file-details">
+                        <div class="file-name" id="fileName">document.pdf</div>
+                        <div class="file-size" id="fileSize">2.4 MB</div>
+                    </div>
+                    <button class="remove-file" id="removeFile"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="text-input-area">
+                    <div class="text-input-header">
+                        <div class="text-input-title">Or Analyze Text Directly</div>
+                        <div class="text-toggle">
+                            <div class="toggle-option active" id="toggleText">Text</div>
+                            <div class="toggle-option" id="toggleURL">URL</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-area-container">
+                        <textarea class="text-input" id="textInput" placeholder="Paste your text here to analyze for AI-generated content..."></textarea>
+                        <div class="char-count" id="charCount">0 characters</div>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-large" id="detectBtn" disabled>
+                        <i class="fas fa-search"></i> Analyze Content
+                    </button>
+                    <button class="btn btn-large btn-secondary" id="clearBtn" disabled>
+                        <i class="fas fa-redo"></i> Clear
+                    </button>
+                </div>
+            </div>
+            
+            <div class="detection-results" id="resultsSection">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-chart-bar"></i> Detection Results</h2>
+                    
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-title">Content Authenticity Analysis</div>
+                            <div class="result-status authentic" id="resultStatus">Authentic Content</div>
+                        </div>
+                        
+                        <div class="confidence-meter">
+                            <div class="confidence-level" id="confidenceLevel" style="width: 85%; background-color: #28a745;"></div>
+                        </div>
+                        <div class="confidence-text" id="confidenceText">85% Confidence in Authenticity</div>
+                        
+                        <div class="result-details">
+                            <div class="detail-item">
+                                <span class="detail-label">AI Generation Probability</span>
+                                <span class="detail-value" id="aiProbability">15%</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Manipulation Detection</span>
+                                <span class="detail-value" id="manipulationDetection">Low</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Content Type</span>
+                                <span class="detail-value" id="contentType">Text</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Analysis Time</span>
+                                <span class="detail-value" id="analysisTime">2.4 seconds</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-large" id="downloadReport">
+                            <i class="fas fa-download"></i> Download Report
+                        </button>
+                        <button class="btn btn-large btn-secondary" id="shareResults">
+                            <i class="fas fa-share-alt"></i> Share Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt logo-icon"></i>
+                    <h2>AI Fake Content Detector</h2>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">How It Works</a>
+                    <a href="#">API Documentation</a>
+                    <a href="#">Contact Us</a>
+                </div>
+                
+                <p class="copyright">© 2025 AI Fake Content Detector. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const removeFile = document.getElementById('removeFile');
+            const detectBtn = document.getElementById('detectBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultStatus = document.getElementById('resultStatus');
+            const confidenceLevel = document.getElementById('confidenceLevel');
+            const confidenceText = document.getElementById('confidenceText');
+            const aiProbability = document.getElementById('aiProbability');
+            const manipulationDetection = document.getElementById('manipulationDetection');
+            const contentType = document.getElementById('contentType');
+            const analysisTime = document.getElementById('analysisTime');
+            const downloadReport = document.getElementById('downloadReport');
+            const shareResults = document.getElementById('shareResults');
+            
+            // Text input elements
+            const textInput = document.getElementById('textInput');
+            const charCount = document.getElementById('charCount');
+            const toggleText = document.getElementById('toggleText');
+            const toggleURL = document.getElementById('toggleURL');
+            
+            // Browse button click event
+            browseBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // File input change event
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleFileSelection(this.files[0]);
+                }
+            });
+            
+            // Drag and drop events
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('active');
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.classList.remove('active');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('active');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileSelection(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Remove file event
+            removeFile.addEventListener('click', function() {
+                resetFileSelection();
+            });
+            
+            // Text input events
+            textInput.addEventListener('input', function() {
+                const count = this.value.length;
+                charCount.textContent = `${count} characters`;
+                
+                // Enable detect button if there's text
+                if (count > 0) {
+                    detectBtn.disabled = false;
+                    clearBtn.disabled = false;
+                    contentType.textContent = "Text";
+                } else if (fileInput.files.length === 0) {
+                    detectBtn.disabled = true;
+                    clearBtn.disabled = true;
+                }
+            });
+            
+            // Toggle between text and URL
+            toggleText.addEventListener('click', function() {
+                toggleText.classList.add('active');
+                toggleURL.classList.remove('active');
+                textInput.placeholder = "Paste your text here to analyze for AI-generated content...";
+            });
+            
+            toggleURL.addEventListener('click', function() {
+                toggleURL.classList.add('active');
+                toggleText.classList.remove('active');
+                textInput.placeholder = "Enter URL to analyze content from a webpage...";
+            });
+            
+            // Detect button event
+            detectBtn.addEventListener('click', function() {
+                // Simulate analysis process
+                detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                detectBtn.disabled = true;
+                
+                setTimeout(function() {
+                    showResults();
+                    detectBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Content';
+                    detectBtn.disabled = false;
+                }, 2000);
+            });
+            
+            // Clear button event
+            clearBtn.addEventListener('click', function() {
+                resetFileSelection();
+                textInput.value = '';
+                charCount.textContent = '0 characters';
+                resultsSection.style.display = 'none';
+                detectBtn.disabled = true;
+                clearBtn.disabled = true;
+            });
+            
+            // Download report button
+            downloadReport.addEventListener('click', function() {
+                alert('Report download functionality would be implemented here');
+            });
+            
+            // Share results button
+            shareResults.addEventListener('click', function() {
+                alert('Share functionality would be implemented here');
+            });
+            
+            // Handle file selection
+            function handleFileSelection(file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'flex';
+                detectBtn.disabled = false;
+                clearBtn.disabled = false;
+                
+                // Set content type based on file extension
+                const extension = file.name.split('.').pop().toLowerCase();
+                if (['jpg', 'jpeg', 'png'].includes(extension)) {
+                    contentType.textContent = 'Image';
+                } else if (extension === 'pdf') {
+                    contentType.textContent = 'PDF Document';
+                } else if (extension === 'docx') {
+                    contentType.textContent = 'Word Document';
+                } else if (extension === 'pptx') {
+                    contentType.textContent = 'PowerPoint Presentation';
+                } else {
+                    contentType.textContent = 'File';
+                }
+            }
+            
+            // Reset file selection
+            function resetFileSelection() {
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+                
+                // Only disable buttons if there's no text either
+                if (textInput.value.length === 0) {
+                    detectBtn.disabled = true;
+                    clearBtn.disabled = true;
+                }
+            }
+            
+            // Show results with random values for demo
+            function showResults() {
+                // Generate random results for demo
+                const authenticityScore = Math.floor(Math.random() * 100);
+                const aiProb = 100 - authenticityScore;
+                
+                // Update UI with results
+                if (authenticityScore >= 70) {
+                    resultStatus.textContent = 'Authentic Content';
+                    resultStatus.className = 'result-status authentic';
+                    confidenceLevel.style.backgroundColor = '#28a745';
+                } else if (authenticityScore >= 40) {
+                    resultStatus.textContent = 'Suspicious Content';
+                    resultStatus.className = 'result-status suspicious';
+                    confidenceLevel.style.backgroundColor = '#ffc107';
+                } else {
+                    resultStatus.textContent = 'Likely AI-Generated';
+                    resultStatus.className = 'result-status fake';
+                    confidenceLevel.style.backgroundColor = '#f72585';
+                }
+                
+                confidenceLevel.style.width = `${authenticityScore}%`;
+                confidenceText.textContent = `${authenticityScore}% Confidence in Authenticity`;
+                aiProbability.textContent = `${aiProb}%`;
+                
+                // Set manipulation detection based on score
+                if (authenticityScore >= 80) {
+                    manipulationDetection.textContent = 'None Detected';
+                } else if (authenticityScore >= 60) {
+                    manipulationDetection.textContent = 'Low';
+                } else if (authenticityScore >= 40) {
+                    manipulationDetection.textContent = 'Moderate';
+                } else {
+                    manipulationDetection.textContent = 'High';
+                }
+                
+                // Set random analysis time
+                analysisTime.textContent = `${(Math.random() * 3 + 1).toFixed(1)} seconds`;
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        });
+    </script>
+</body>
+</html>
