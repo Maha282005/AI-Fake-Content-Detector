@@ -1,3 +1,9 @@
+<img width="1118" height="421" alt="Screenshot 2025-11-25 114011" src="https://github.com/user-attachments/assets/5f0d0fdd-a26d-4c93-8b1b-459cfb54b684" />
+<img width="1300" height="841" alt="Screenshot 2025-11-25 113946" src="https://github.com/user-attachments/assets/984f62e9-003c-4d83-b0e8-7b52c991d639" />
+<img width="1366" height="951" alt="Screenshot 2025-11-25 113933" src="https://github.com/user-attachments/assets/621c371e-f626-4acc-b3fd-e4e39bd83d21" />
+<img width="1354" height="1016" alt="Screenshot 2025-11-25 113917" src="https://github.com/user-attachments/assets/58d465f9-2e37-4e29-8f9d-f9e4595377c2" />
+<img width="1174" height="828" alt="Screenshot 2025-11-25 113901 - Copy" src="https://github.com/user-attachments/assets/ce50a800-fadf-435d-ae4c-119c18a81a17" />
+<img width="1373" height="680" alt="Screenshot 2025-11-25 113847 - Copy" src="https://github.com/user-attachments/assets/da32667d-2707-4d64-9a7c-3c39ff8367ba" />
 # AI-Fake-Content-Detector
 AI Fake Content Detector identifies AI-generated content in text, documents, and images, providing confidence scores to help users verify authenticity quickly and reliably, supporting educators, content creators, and online platforms.
 AI Fake Content Detector – Project Description
